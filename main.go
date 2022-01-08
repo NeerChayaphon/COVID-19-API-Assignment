@@ -3,13 +3,12 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type dataFormat struct {
+type DataFormat struct {
 	ConfirmDate    string `json:"ConfirmDate"`
 	No             *int64 `json:"No"`
 	Age            *int64 `json:"Age"`
@@ -24,18 +23,18 @@ type dataFormat struct {
 	StatQuarantine *int64 `json:"StatQuarantine"`
 }
 
-func fetchData() (covidData map[string][]dataFormat) {
+func FetchData() (covidData map[string][]DataFormat) {
 	resp, err := http.Get("http://static.wongnai.com/devinterview/covid-cases.json")
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
-	bodyJSON := make(map[string][]dataFormat)
+	bodyJSON := make(map[string][]DataFormat)
 	jsonErr := json.Unmarshal(body, &bodyJSON)
 
 	if jsonErr != nil {
@@ -45,7 +44,7 @@ func fetchData() (covidData map[string][]dataFormat) {
 	return bodyJSON
 }
 
-func countAgeGroup(covidData map[string][]dataFormat) (ageGroup map[string]int) {
+func CountAgeGroup(covidData map[string][]DataFormat) (ageGroup map[string]int) {
 	ageMap := make(map[string]int)
 	ageMap["0-30"] = 0
 	ageMap["31-60"] = 0
@@ -72,7 +71,7 @@ func countAgeGroup(covidData map[string][]dataFormat) (ageGroup map[string]int) 
 	return ageMap
 }
 
-func countProvince(covidData map[string][]dataFormat) (province map[string]int) {
+func CountProvince(covidData map[string][]DataFormat) (province map[string]int) {
 	provinceMap := make(map[string]int)
 	data := covidData["Data"]
 
@@ -100,15 +99,15 @@ func main() {
 
 	r.GET("/covid/summary", func(c *gin.Context) {
 
-		covidData := fetchData()
+		covidData := FetchData()
 
-		ageGroup := countAgeGroup(covidData)
+		ageGroup := CountAgeGroup(covidData)
 
-		province := countProvince(covidData)
+		province := CountProvince(covidData)
 
 		c.JSON(http.StatusOK, gin.H{
 			"Province": province,
-			"Age":      ageGroup,
+			"AgeGroup": ageGroup,
 		})
 	})
 
