@@ -67,19 +67,32 @@ func countAgeGroup(covidData map[string][]dataFormat) (ageGroup map[string]int) 
 				ageMap["61+"] += 1
 			}
 		}
-		// switch {
-		// case *value.Age >= 0 && *value.Age <= 30:
-		// 	ageMap["0-30"] += 1
-		// case *value.Age >= 31 && *value.Age <= 60:
-		// 	ageMap["31-60"] += 1
-		// case *value.Age >= 61:
-		// 	ageMap["61+"] += 1
-		// default:
-		// 	ageMap["N/A"] += 1
-		// }
 	}
 
 	return ageMap
+}
+
+func countProvince(covidData map[string][]dataFormat) (province map[string]int) {
+	provinceMap := make(map[string]int)
+	data := covidData["Data"]
+
+	for _, value := range data {
+		if len(value.Province) != 0 {
+			if _, ok := provinceMap[value.Province]; !ok {
+				provinceMap[value.Province] = 1
+			} else {
+				provinceMap[value.Province] += 1
+			}
+		} else {
+			if _, ok := provinceMap["N/A"]; !ok {
+				provinceMap["N/A"] = 1
+			} else {
+				provinceMap["N/A"] += 1
+			}
+		}
+	}
+
+	return provinceMap
 }
 
 func main() {
@@ -91,15 +104,13 @@ func main() {
 
 		ageGroup := countAgeGroup(covidData)
 
+		province := countProvince(covidData)
+
 		c.JSON(http.StatusOK, gin.H{
-			"message": "OK",
-			"Age":     ageGroup,
-			"Data":    covidData["Data"],
+			"Province": province,
+			"Age":      ageGroup,
 		})
 	})
 
 	r.Run(":9090")
 }
-
-/*
- */
