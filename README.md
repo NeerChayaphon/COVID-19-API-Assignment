@@ -5,7 +5,7 @@
 go run main.go
 ```
 
-### Run test by typing the following command
+### Run tests by typing the following command
 ```
 go test -v
 ```
