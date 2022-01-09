@@ -34,7 +34,7 @@ func TestCountProvince(t *testing.T) {
 	}
 }
 
-// TestHttpRequest - Testing the HTTP request result in term of StatusCode
+// TestHttpRequest - Testing the HTTP request result in term of Status Code
 func TestHttpRequest(t *testing.T) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "{ \"status\": \"expected service response\"}")

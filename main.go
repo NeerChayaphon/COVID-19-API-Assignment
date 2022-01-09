@@ -26,7 +26,7 @@ type DataFormat struct {
 }
 
 // FetchData - Function to get the data from the global API
-// The data will be store in a Map variable that have a string as a key and slice of DataFormat struct is value
+// The data will be store in a Map variable that have a string as a key and slice of DataFormat struct as a value
 func FetchData() (covidData map[string][]DataFormat) {
 	resp, err := http.Get("http://static.wongnai.com/devinterview/covid-cases.json") // get data
 	if err != nil {
@@ -50,7 +50,7 @@ func FetchData() (covidData map[string][]DataFormat) {
 
 // CountAgeGroup - A function that count each age group
 func CountAgeGroup(covidData map[string][]DataFormat) (ageGroup map[string]int) {
-	ageMap := make(map[string]int) // map to store each each group
+	ageMap := make(map[string]int) // map to store each age group
 	ageMap["0-30"] = 0
 	ageMap["31-60"] = 0
 	ageMap["61+"] = 0
@@ -58,7 +58,7 @@ func CountAgeGroup(covidData map[string][]DataFormat) (ageGroup map[string]int) 
 
 	data := covidData["Data"] // get the data
 
-	for _, value := range data { // loop all the data in an array
+	for _, value := range data { // loop all the data in a slice
 
 		if value.Age == nil { // Age is null
 			ageMap["N/A"] += 1
@@ -81,7 +81,7 @@ func CountProvince(covidData map[string][]DataFormat) (province map[string]int) 
 	provinceMap := make(map[string]int) // create a map to store Provinces
 	data := covidData["Data"]           // get the data
 
-	for _, value := range data { // loop all the data in the array
+	for _, value := range data { // loop all the data in the slice
 		if len(value.Province) != 0 { // check for the Province value is not empty
 			if _, ok := provinceMap[value.Province]; !ok { // check that the Province is exist in the map or not
 				provinceMap[value.Province] = 1 // if not then set to 1
@@ -112,7 +112,7 @@ func main() {
 
 		province := CountProvince(covidData) // find and count province
 
-		c.JSON(http.StatusOK, gin.H{ // return JSON responce
+		c.JSON(http.StatusOK, gin.H{ // return JSON response
 			"Province": province,
 			"AgeGroup": ageGroup,
 		})
